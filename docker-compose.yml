@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  training:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./models:/app/models
+      - ./notebooks:/app/notebooks
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - WANDB_API_KEY=${WANDB_API_KEY}
+      - PYTHONUNBUFFERED=1
+      - TORCH_CUDA_ARCH_LIST=8.9
+      - FORCE_CUDA=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 32G
+    shm_size: '16gb'
+    command: train
+
+  tensorboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./logs:/app/logs
+    ports:
+      - "6006:6006"
+    command: tensorboard
+
+  notebook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./models:/app/models
+      - ./notebooks:/app/notebooks
+    ports:
+      - "8888:8888"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - PYTHONUNBUFFERED=1
+      - TORCH_CUDA_ARCH_LIST=8.9
+      - FORCE_CUDA=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 32G
+    shm_size: '16gb'
+    command: notebook
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    command: test 

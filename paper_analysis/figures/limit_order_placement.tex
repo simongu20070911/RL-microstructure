@@ -1,0 +1,73 @@
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.8]
+% Define colors
+\definecolor{bidcolor}{RGB}{76, 175, 80}
+\definecolor{askcolor}{RGB}{244, 67, 54}
+\definecolor{newlimit}{RGB}{156, 39, 176}
+\definecolor{agent}{RGB}{255, 87, 34}
+
+% Order book before
+\node at (-2, 5) {\textbf{Before: RL Agent Decision}};
+
+% Bid side
+\node[rectangle, draw, fill=bidcolor!30, minimum width=2cm] at (-3, 3) {\$3,637.50};
+\node[rectangle, draw, fill=bidcolor!20] at (-3, 2.5) {\$3,637.25};
+\node[rectangle, draw, fill=bidcolor!10] at (-3, 2) {\$3,637.00};
+
+% Ask side  
+\node[rectangle, draw, fill=askcolor!10] at (-3, -2) {\$3,638.25};
+\node[rectangle, draw, fill=askcolor!20] at (-3, -2.5) {\$3,638.50};
+\node[rectangle, draw, fill=askcolor!30] at (-3, -3) {\$3,638.75};
+
+% Spread
+\node[rectangle, draw, fill=yellow!30] at (-3, 0) {Spread: \$0.75};
+
+% RL Agent decision process
+\node[rectangle, draw, fill=agent!20, minimum width=3cm] at (2, 0) {
+\begin{tabular}{c}
+\textbf{RL Agent} \\
+\textbf{Market Making} \\
+Action: Place Limit Orders \\
+Bid: \$3,637.75 (5 ETH) \\
+Ask: \$3,638.00 (5 ETH)
+\end{tabular}
+};
+
+% Arrow showing decision
+\draw[->, thick, agent] (-1, 0) -- (0.5, 0);
+
+% Order book after
+\node at (7, 5) {\textbf{After: Limit Orders Placed}};
+
+% Bid side (updated)
+\node[rectangle, draw, fill=bidcolor!30] at (6, 3) {\$3,637.50};
+\node[rectangle, draw, fill=newlimit!40] at (6, 2.5) {\$3,637.75 (New)};
+\node[rectangle, draw, fill=bidcolor!20] at (6, 2) {\$3,637.25};
+
+% Ask side (updated)
+\node[rectangle, draw, fill=newlimit!40] at (6, -1.5) {\$3,638.00 (New)};
+\node[rectangle, draw, fill=askcolor!10] at (6, -2) {\$3,638.25};
+\node[rectangle, draw, fill=askcolor!20] at (6, -2.5) {\$3,638.50};
+
+% New spread
+\node[rectangle, draw, fill=yellow!30] at (6, 0.25) {New Spread: \$0.25};
+
+% Market making profit potential
+\node[rectangle, draw, fill=green!20] at (6, -4) {
+\begin{tabular}{c}
+\textbf{Profit Potential:} \\
+Spread Capture: \$0.25/ETH \\
+Max Profit: \$1.25 (5 ETH) \\
+Risk: Inventory exposure
+\end{tabular}
+};
+
+% Arrows showing improvement
+\draw[->, thick, green] (3.5, 0) -- (5.5, 0.25);
+
+\end{tikzpicture}
+\caption{RL Agent Limit Order Placement Strategy. The agent places bid and ask orders to capture the spread while providing liquidity. The strategy reduces the market spread from \$0.75 to \$0.25, improving market efficiency.}
+\label{fig:limit_order_placement}
+\end{figure}

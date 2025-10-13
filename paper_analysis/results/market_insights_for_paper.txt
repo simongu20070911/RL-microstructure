@@ -1,0 +1,13 @@
+MARKET INSIGHTS FOR ACADEMIC PAPER
+==================================================
+
+Average Bid-Ask Spread: $0.0104 (0.06 bps)
+Spread Range: 0.05 - 2.62 bps
+Average ETH Price: $1837.07
+
+Average Order Book Depth: 87.78 ETH
+Bid/Ask Imbalance: -0.0237
+Order Book Levels: 10
+
+Market Making Viability: Unprofitable
+Net Spread After Costs: -19.94 bps

@@ -1,0 +1,20 @@
+### **Critical Bugs Section**:
+
+1. **Bug Description**:
+    - File `/home/gaen/Documents/RL/envs/env_2sided.py` had a `NameError` due to a typo. Error message:
+    
+    ```
+    NameError: name 'raw_lsist' is not defined. Did you mean: 'raw_obs_list'?
+    ```
+    
+    - The issue was in the `_get_raw_observation` function on line 861. The variable `raw_lsist` was incorrectly spelled, it should have been `raw_obs_list`.
+
+### **Picky Feedback Section**:
+
+- **Feedback**:
+    - No picky feedback for this fix.
+
+### **Contextual Files Needed**:
+
+- The following files would provide context for the review and debugging of the issue:
+    - `/home/gaen/Documents/RL/envs/env_2sided.py`

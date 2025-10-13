@@ -1,0 +1,70 @@
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.9]
+% Define colors
+\definecolor{profit}{RGB}{76, 175, 80}
+\definecolor{loss}{RGB}{244, 67, 54}
+\definecolor{neutral}{RGB}{158, 158, 158}
+\definecolor{inventory}{RGB}{33, 150, 243}
+
+% Time axis
+\draw[->, thick] (0, 0) -- (10, 0) node[right] {\textbf{Time (minutes)}};
+\draw[->, thick] (0, -3) -- (0, 4) node[above] {\textbf{Position (ETH)}};
+
+% Grid
+\foreach \x in {1,2,...,9} {
+    \draw[gray, thin] (\x, -3) -- (\x, 4);
+}
+\foreach \y in {-2,-1,1,2,3} {
+    \draw[gray, thin] (0, \y) -- (10, \y);
+}
+
+% Inventory position over time
+\draw[inventory, thick] (0, 0) -- (1, 1.5) -- (2, 2.5) -- (3, 1.8) -- (4, 0.5) -- (5, -1.2) -- (6, -2.1) -- (7, -1.5) -- (8, -0.8) -- (9, 0.2) -- (10, 0);
+
+% Fill areas
+\fill[profit!20] (0, 0) -- (1, 1.5) -- (2, 2.5) -- (3, 1.8) -- (4, 0.5) -- (4, 0) -- cycle;
+\fill[loss!20] (5, 0) -- (5, -1.2) -- (6, -2.1) -- (7, -1.5) -- (8, -0.8) -- (8, 0) -- cycle;
+
+% Key events
+\node[circle, fill=profit, minimum size=0.3cm] at (2, 2.5) {};
+\node[right] at (2.3, 2.5) {Max Long: +2.5 ETH};
+
+\node[circle, fill=loss, minimum size=0.3cm] at (6, -2.1) {};
+\node[right] at (6.3, -2.1) {Max Short: -2.1 ETH};
+
+% Inventory penalty zones
+\draw[red, dashed] (0, 2) -- (10, 2) node[right] {Penalty Threshold: +2 ETH};
+\draw[red, dashed] (0, -2) -- (10, -2) node[right] {Penalty Threshold: -2 ETH};
+
+% PnL calculation box
+\node[rectangle, draw, fill=yellow!20] at (5, -4.5) {
+\begin{tabular}{l}
+\textbf{Inventory Management:} \\
+Target Position: 0 ETH \\
+Max Deviation: ±2 ETH \\
+Penalty Rate: 0.001 per ETH² \\
+Risk-Adjusted Return: -0.15\%
+\end{tabular}
+};
+
+% Trade executions
+\foreach \x/\y in {1/1.5, 3/1.8, 5/-1.2, 7/-1.5, 9/0.2} {
+    \node[circle, fill=yellow, minimum size=0.2cm] at (\x, \y) {};
+}
+
+% Legend
+\node[rectangle, draw] at (8.5, 3.5) {
+\begin{tabular}{l}
+\textcolor{inventory}{\textbf{—}} Position \\
+\textcolor{profit}{\textbf{▲}} Long Exposure \\
+\textcolor{loss}{\textbf{▼}} Short Exposure \\
+\textcolor{yellow}{\textbf{●}} Trade Events
+\end{tabular}
+};
+
+\end{tikzpicture}
+\caption{RL Agent Inventory Management Over Time. The agent maintains position exposure while managing inventory risk through penalty functions. Positions exceeding ±2 ETH trigger penalty costs, encouraging mean reversion to neutral inventory.}
+\label{fig:inventory_management}
+\end{figure}

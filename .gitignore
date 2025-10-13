@@ -58,9 +58,13 @@ venv.bak/
 # IDE
 .vscode/
 .idea/
+.history/
+*.DS_Store
+._*
 
 # Logs
 logs/
+*.log
 
 # Data files
 *.csv
@@ -73,3 +77,6 @@ experiments/
 
 # Custom exclusions
 orderbook*
+
+# Data collection dumps
+paper_analysis/doge_analysis/data_collection/

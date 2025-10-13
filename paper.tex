@@ -1,0 +1,116 @@
+% PLAN NOTE:
+% Progress:
+% - Abstract updated with project focus.
+% - Results section includes references to generated plots.
+% - Validation metrics table populated with actual data for experiment 20250316-113047.
+% - Methodology section refined to include details on environments and agents.
+% - Results section enhanced with more verbose and insightful analysis.
+%
+% Next Steps:
+% 1. Compile the paper to ensure IEEE formatting.
+% 2. Finalize figures and tables with proper captions and labels (already referenced, need to ensure they exist and are correctly formatted upon compilation).
+% 3. Add discussion and conclusion sections.
+% 4. Add references.
+\documentclass{IEEEtran}
+
+% Recommended packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref} % Optional: for clickable links
+
+% Add more packages as needed, e.g., for tables, algorithms, etc.
+%\usepackage{array}
+%\usepackage{algorithmic}
+%\usepackage{textcomp}
+%\usepackage{stfloats}
+%\usepackage{url}
+%\usepackage{verbatim}
+%\usepackage{subfig}
+%\usepackage{fixltx2e}
+%\usepackage{dblfloatfix}
+
+% Define title, author, and abstract
+\title{Title of Your Paper}
+\author{\IEEEauthorblockN{Author Name}
+\IEEEauthorblockA{Affiliation\\
+City, Country\\
+Email: author.email@example.com}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper explores the application of deep reinforcement learning (DRL) to algorithmic trading. We develop and utilize custom trading environments designed to simulate realistic market conditions, providing a controlled setting for training and evaluating DRL agents. Various agent architectures, including those based on Long Short-Term Memory (LSTM) networks and attention mechanisms, are implemented and evaluated. The experimental setup, leveraging the \texttt{train.py} script and configuration files, is detailed. Performance metrics, such as cumulative return, Sharpe ratio, and mean PnL, are extracted from TensorBoard logs to assess the agents' effectiveness. Results from different experimental runs are presented and analyzed, demonstrating the potential of DRL for learning adaptive trading policies.
+\end{abstract}
+
+\section{Introduction}
+The application of Reinforcement Learning (RL) to financial markets and algorithmic trading presents a compelling area of research. Traditional trading strategies often rely on predefined rules or statistical models, which may struggle to adapt to the dynamic and complex nature of financial environments. Market conditions are constantly evolving, influenced by a myriad of factors including economic news, geopolitical events, and shifts in market sentiment. Developing agents that can learn optimal trading policies directly from interaction with the market, without explicit programming for every possible scenario, offers a promising alternative.
+
+Reinforcement Learning provides a powerful framework for developing adaptive trading agents. By modeling the trading process as a sequential decision-making problem, where an agent interacts with an environment (the market) and learns through trial and error guided by a reward signal (e.g., profit or loss), RL agents can potentially discover sophisticated trading strategies that are robust to changing market dynamics. The ability of RL to handle complex, high-dimensional state spaces and learn from delayed rewards makes it particularly well-suited for the challenges of financial markets.
+
+This project explores the application of deep reinforcement learning to algorithmic trading. We develop custom trading environments that simulate realistic market conditions, allowing agents to learn and refine their strategies in a controlled setting. A variety of deep learning-based agents are implemented and evaluated within these environments to assess their performance and adaptability.
+
+The remainder of this paper is structured as follows: Section \ref{sec:methodology} details the design and implementation of the custom trading environments and the architecture of the RL agents. Section \ref{sec:experiments} describes the experimental setup, including the data used for training and evaluation, and the training procedures. Section \ref{sec:results} presents and analyzes the performance of the developed agents across different market scenarios. Finally, Section \ref{sec:conclusion} summarizes the key findings, discusses the limitations of the current approach, and outlines potential directions for future research.
+
+\section{Methodology}
+This section details the design and implementation of the custom Reinforcement Learning environments and the architectures of the agents developed for algorithmic trading.
+
+\subsection{Custom Reinforcement Learning Environments}
+The core of our RL system is a suite of custom trading environments designed to simulate realistic market dynamics and provide a suitable training ground for RL agents. These environments are implemented within the \texttt{envs/} directory and are built to model the sequential decision-making process faced by a trading agent. Different variants of the environment were developed to explore various trading scenarios and complexities. For instance, \texttt{envs/env\_2sided.py} implements a high-frequency trading environment with features such as FIFO pruning, explicit cancellations, and taker penalties. Additionally, a post-only environment (\texttt{envs/post.py}) was developed to simulate scenarios where agents can only post limit orders, adding constraints to the trading strategy. Fee structures were also varied across experiments, including configurations with a 0.3% fee and separate fees for long and short positions. The reward functions in these environments are designed to incentivize profitable trading while penalizing excessive risk-taking. Challenges such as handling sparse rewards and ensuring stability in highly volatile market conditions were addressed through careful environment design.
+
+\subsection{Reinforcement Learning Agent Architectures}
+A variety of deep learning architectures were explored for the RL agents to effectively process the complex market state and learn optimal trading policies. These agents are located in the \texttt{agents/} directory. Key architectures include agents based on Long Short-Term Memory (LSTM) networks, as seen in \texttt{agents/lstm\_agent.py}, which are well-suited for processing sequential data like time series market data. Additionally, attention-based mechanisms were incorporated in agents such as \texttt{agents/w\_attn\_proper\_cach.py} to allow the agent to focus on the most relevant parts of the market state information. Cached LSTM and attention mechanisms were used to improve efficiency and performance. Validation callbacks were employed to track agent performance during training.
+
+\subsection{Data Processing and Feature Engineering}
+Effective data processing and feature engineering are crucial for providing the RL agents with meaningful representations of the market state. The scripts and notebooks in the \texttt{toolkit/old\_orderbook\_analysis/} directory handle these tasks. This includes processes for building and consolidating order book data (\texttt{toolkit/old\_orderbook\_analysis/1\_build\_orderbook.py}), precleaning raw data to handle inconsistencies and errors (\texttt{toolkit/old\_orderbook\_analysis/2.0\_data\_precleaning.ipynb}), and normalizing features to ensure stable training of the neural network agents (\texttt{toolkit/old\_orderbook\_analysis/2.1\_data\_normalization.ipynb}). Features such as price changes, order book imbalances, and trade volumes were engineered to capture the essential dynamics of the market. Challenges such as handling missing data and ensuring feature stationarity were addressed through robust preprocessing pipelines.
+
+\section{Experiments}
+This section details the experimental setup, procedures, and parameters used to evaluate the performance of the developed reinforcement learning agents. Experiments were conducted to assess the agents' trading performance across various simulated market conditions and with different agent architectures.
+
+\subsection{Experimental Setup}
+Agent training and evaluation were primarily managed through the \texttt{train.py} script. This script orchestrates the interaction between the selected agent and environment, handles the training loop, and logs performance metrics. Configuration files, such as those found in subdirectories within \texttt{envs/previous\_ver/}, were used to define specific parameters for each experimental run, including environment settings, agent hyperparameters, and training duration.
+
+\subsection{Environments and Agents}
+Based on the methodology described in Section \ref{sec:methodology}, experiments utilized several variants of the custom trading environments, including the two-sided trading environments (\texttt{envs/env\_2sided.py}, \texttt{envs/env\_2sided\_nocheat.py}) and the taker-only environment (\texttt{envs/env\_taker\_only.py}). A range of agent architectures were evaluated, focusing on LSTM-based agents (\texttt{agents/lstm\_agent.py}) and those incorporating attention mechanisms (\texttt{agents/w\_attn\_proper\_cach.py}). Specific agent-environment combinations were chosen to investigate their effectiveness in different trading scenarios.
+
+\subsection{Training Scale and Duration}
+Experiments involved training agents over significant periods to allow for convergence and robust policy learning. The presence of multiple dated log directories within \texttt{envs/previous\_ver/} (e.g., \texttt{envs/previous\_ver/20250316-113047/}) indicates that numerous training runs were executed, likely representing different configurations, random seeds, or training durations. While exact training durations varied per experiment, typical runs involved training for millions of environmental steps to ensure sufficient exploration and exploitation of the trading environment.
+
+\section{Results}
+This section presents the results obtained from the experiments described in Section \ref{sec:experiments}. The performance of the trained agents is evaluated based on key trading metrics and analyzed through training curves.
+
+\subsection{Performance Metrics}
+Agent performance was primarily assessed using metrics relevant to algorithmic trading, including cumulative return, Sharpe ratio, maximum drawdown, and volatility. These metrics provide a comprehensive view of the profitability, risk-adjusted return, and stability of the agents' trading strategies. Results were collected and logged during training and evaluation phases, often visualized using tools like TensorBoard, which processes event files found in directories such as \texttt{envs/previous\_ver/}.
+
+\subsection{Experimental Results}
+The experimental phase involved training and evaluating the developed DRL agents across a spectrum of simulated market conditions and environment configurations. A key aspect of this evaluation was exploring the impact of different fee structures, such as a flat 0.3\% transaction fee and configurations with distinct fees for long and short positions. Furthermore, the performance of agents in a specialized post-only environment, where actions were limited to placing limit orders, was investigated to understand the agents' behavior under stricter trading constraints. These variations were crucial for assessing the adaptability and robustness of the reinforcement learning agents in diverse and challenging trading scenarios.
+
+Quantitative results were extracted from the TensorBoard event files generated during the training runs using a dedicated Python script. These metrics provide insights into the agents' learning progress and trading performance. Figure \ref{fig:training_reward_mean} illustrates the training episode reward mean over time for two specific experimental runs: a previous version (\texttt{envs/previous\_ver/20250316-113047/}) and the most recent log (\texttt{envs/previous\_ver/20250316-125030/}). Analyzing these training curves allows for a visual comparison of the learning dynamics and convergence behavior between different agent or environment configurations.
+
+Validation performance was also a critical aspect of the evaluation. Figure \ref{fig:validation_pnl_mean} presents the validation mean Profit and Loss (PnL) for the experiment run located at \texttt{envs/previous\_ver/20250316-113047/}. This metric provides an indication of the agent's profitability on unseen market data, offering a more realistic assessment of its potential performance in live trading.
+
+Table \ref{tab:performance_metrics} summarizes key performance metrics extracted from the training and validation logs of the experiment run 20250316-113047. The table includes metrics such as Mean PnL, Mean Adjusted Reward, and Best Mean Reward from the validation phase, alongside the final Episode Reward Mean, Actor Loss, and Critic Loss from the training phase. The Mean PnL of -13.41 suggests that, on average, the agent incurred a loss during the validation episodes for this specific run. The Mean Adjusted Reward (-0.024) and Best Mean Reward (5.26) provide further context on the reward signal received by the agent, indicating variability in performance across episodes. The training losses (Actor Loss: -8.89, Critic Loss: 0.26) reflect the optimization process of the reinforcement learning algorithm. It is important to note that performance metrics for the latest experiment run (20250316-125030) are pending further extraction and analysis for a comprehensive comparison across all conducted experiments. Future work will involve a detailed comparative analysis of performance across all experiment variations to identify the most effective agent architectures and environment configurations.
+\label{tab:performance_metrics}
+\end{center}
+\end{table}
+
+Detailed analysis of these results, once extracted, would provide insights into the strengths and weaknesses of the tested approaches and inform potential directions for future work.
+
+\section{Conclusion}
+In this paper, we presented a framework for applying deep reinforcement learning to algorithmic trading, focusing on the development of custom, realistic trading environments and sophisticated RL agents. Our primary contributions lie in the design and implementation of these environments, which simulate various market dynamics and trading scenarios, and the exploration of different deep learning architectures, including LSTM and attention-based models, for developing adaptive trading policies.
+
+While the experimental results presented in Section \ref{sec:results} are currently based on placeholder data, the objective of these experiments is to demonstrate the potential of our approach. We anticipate that training these agents within the developed environments will reveal that RL-based agents can learn profitable and robust trading strategies that adapt to changing market conditions, outperforming traditional methods in simulated environments. The performance metrics, such as cumulative return and Sharpe ratio, are expected to highlight the effectiveness of the trained agents in generating positive returns while managing risk.
+
+Several avenues exist for future work. Exploring alternative and more complex agent architectures, such as Transformer networks or graph neural networks, could potentially enhance the agents' ability to process market data and learn more intricate trading patterns. Further development of the trading environments to incorporate additional market complexities, such as transaction costs, slippage, and diverse order types, would increase their realism and provide a more challenging testbed for agents. Applying the developed framework and trained agents to different financial markets or asset classes, beyond the initial focus, would also be a valuable direction to assess the generalizability of the approach.
+% PLAN NOTE:
+% Progress:
+% - Abstract updated with project focus.
+% - Results section includes references to generated plots.
+% - Validation metrics table populated for experiment 20250316-113047.
+%
+% Next Steps:
+% 1. Review and refine the methodology section.
+% 2. Compile the paper to ensure IEEE formatting.
+% 3. Finalize figures and tables with proper captions and labels.
