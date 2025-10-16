@@ -5,12 +5,8 @@ import os
 import pandas as pd
 import math # Added for isnan checks
 
-# Ensure the envs directory is in the Python path
-# Adjust the path depth ('..') if your structure is different
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Import the specific environment class
-from envs import env_2sided # Assuming your file is envs/env_2sided.py
+# Use stable import path
+from rltrader.envs import HFTEnv
 
 # Helper to create a dummy CSV if it doesn't exist
 def create_dummy_csv(path="dummy_lob_data.csv", levels=5):
@@ -72,7 +68,7 @@ DEFAULT_CONFIG = {
 def setup_env():
     """Provides a fresh HFTEnv instance for each test."""
     config = DEFAULT_CONFIG.copy()
-    env = env_2sided.HFTEnv(config)
+    env = HFTEnv(config)
     env.reset() # Initialize internal states
     # Set a default valid market state for convenience
     env.bids = np.array([[100.00, 5.0], [99.99, 10.0]], dtype=np.float32)
