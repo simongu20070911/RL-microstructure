@@ -1,9 +1,14 @@
+from pathlib import Path
+
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
 from collections import deque
 import pandas as pd
 import logging
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = PROJECT_ROOT / "data" / "raw"
 
 class HFTEnvWeb(gym.Env):
     def __init__(self, config):
@@ -328,7 +333,7 @@ class HFTEnvWeb(gym.Env):
 
 # Configuration
 config = {
-    "csv_path": "/home/gaen/Documents/RL/orderbook_trimmed_small.csv",
+    "csv_path": str((DATA_DIR / "orderbook_trimmed_small.csv").resolve()),
     "initial_capital": 20000.0,
     "max_steps": 10000,
     "order_book_levels": 9,

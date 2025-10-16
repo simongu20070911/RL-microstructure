@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -5,30 +7,22 @@ import logging
 import math
 import plotly.graph_objects as go
 from collections import deque
-import io # For capturing logs
+import io  # For capturing logs
 
-# --- Environment Import ---
-try:
-    # Assuming env_2sided.py is in an 'envs' subdirectory relative to the script
-    from envs.env_2sided import HFTEnv
-    # If your env file is named differently or in the same directory, adjust the import:
-    # from hft_env_filename import HFTEnv # Example if in same directory
-except ImportError:
-    st.error("Error: Could not import HFTEnv. Make sure the environment file (e.g., env_2sided.py) is accessible.")
-    st.stop()
-except Exception as e:
-    st.error(f"An unexpected error occurred during environment import: {e}")
-    st.stop()
+from rltrader.envs import TwoSidedMarketEnv
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = PROJECT_ROOT / "data" / "raw"
 
 
 # --- Configuration (Use your existing config) ---
 # NOTE: Ensure this config matches the one used by the environment logic if modified elsewhere
 config = {
     # --- Data and Environment ---
-    "csv_path": "/home/gaen/Documents/RL/orderbook_trimmed_small.csv", # Small test dataset
+    "csv_path": str((DATA_DIR / "orderbook_trimmed_small.csv").resolve()),
     #"csv_path":"/home/gaen/Documents/billions_db/orderbooks/binance/futures/ethusdc/28-Mar-2025/binance_futures_ethusdc_orderbook_28-Mar-2025.csv", # <<< --- UPDATE THIS PATH --- >>>
     # "env_path": "hft_env", # Not typically needed if importing directly
-    # "env_class": "HFTEnv", # Not typically needed if importing directly
+    # "env_class": "TwoSidedMarketEnv", # Not typically needed if importing directly
 
     # --- Core Simulation Parameters ---
     "initial_capital": 20000.0,
@@ -108,7 +102,7 @@ root_logger.addHandler(streamlit_handler)
 root_logger.setLevel(logging.INFO) # Set root logger level
 
 # Set level for the environment's logger specifically if needed
-# logging.getLogger('HFTEnv').setLevel(logging.DEBUG) # Example
+# logging.getLogger('TwoSidedMarketEnv').setLevel(logging.DEBUG) # Example
 
 logging.info("Streamlit app started. Logging configured.") # Test message
 
@@ -119,7 +113,7 @@ def load_environment(config_dict):
     """Loads or reloads the HFT environment."""
     try:
         # Instantiate the environment
-        env_instance = HFTEnv(config_dict)
+        env_instance = TwoSidedMarketEnv(config_dict)
         logging.info("HFT Environment loaded successfully via load_environment.")
         return env_instance
     except FileNotFoundError:
@@ -652,7 +646,7 @@ with tab_details:
         st.markdown(f"- Risk Penalty: `{info.get('risk_penalty', 'N/A')}`")
         st.markdown(f"- Taker Penalty (Applied at Activation): `{info.get('taker_penalty_applied', 'N/A')}`")
         st.markdown(f"- Explicit Cancel Penalty: `{info.get('explicit_cancel_penalty', 'N/A')}`")
-        st.markdown(f"_(Add relevant components to HFTEnv._get_info() if needed)_")
+        st.markdown(f"_(Add relevant components to TwoSidedMarketEnv._get_info() if needed)_")
 
     with details_col2:
         st.markdown("**Environment Configuration:**")
@@ -770,7 +764,7 @@ if action_to_take is not None:
 
 
             # Order Placement History (Check if info contains placement details)
-            # *** Requires modification in HFTEnv's step/place_order to return placed order details in info dict ***
+            # *** Requires modification in TwoSidedMarketEnv's step/place_order to return placed order details in info dict ***
             # Example: if env returns info['placed_orders_details'] = [{'step': s, 'price': p, 'is_buy': b}, ...]
             placed_orders = info.get('placed_orders_details', [])
             if placed_orders:

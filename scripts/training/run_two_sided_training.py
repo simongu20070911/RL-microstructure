@@ -533,7 +533,7 @@ def evaluate(model, env, n_episodes=10):
 
 # --- Script Execution ---
 
-if __name__ == "__main__":
+def main():
     # Optional: Enable anomaly detection for debugging NaN gradients (slows training)
     # torch.autograd.set_detect_anomaly(True)
 
@@ -683,3 +683,7 @@ if __name__ == "__main__":
     finally:
         total_time_min = (time.time() - main_start_time) / 60
         logging.info(f" ====== Training Script Finished in {total_time_min:.2f} minutes ====== ")
+
+
+if __name__ == "__main__":
+    main()

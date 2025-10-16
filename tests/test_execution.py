@@ -1,16 +1,27 @@
+from pathlib import Path
+
 import pytest
 import numpy as np
-import sys
 import os
 import pandas as pd
 import math # Added for isnan checks
 
+pytest.importorskip("gymnasium")
+
 # Use stable import path
-from rltrader.envs import HFTEnv
+from rltrader.envs import TwoSidedMarketEnv
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data" / "raw"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # Helper to create a dummy CSV if it doesn't exist
-def create_dummy_csv(path="dummy_lob_data.csv", levels=5):
+def create_dummy_csv(path: Path | None = None, levels=5):
+    if path is None:
+        path = DATA_DIR / "dummy_lob_data.csv"
+    path = Path(path)
     if not os.path.exists(path):
+        path.parent.mkdir(parents=True, exist_ok=True)
         print(f"Creating dummy CSV at {path}")
         cols = ["timestamp"]
         for i in range(1, levels + 1):
@@ -29,7 +40,7 @@ def create_dummy_csv(path="dummy_lob_data.csv", levels=5):
 
         df = pd.DataFrame(dummy_data, columns=cols)
         df.to_csv(path, index=False)
-    return path
+    return str(path)
 
 # Default configuration for tests
 DEFAULT_CONFIG = {
@@ -66,9 +77,9 @@ DEFAULT_CONFIG = {
 
 @pytest.fixture
 def setup_env():
-    """Provides a fresh HFTEnv instance for each test."""
+    """Provides a fresh two-sided market environment instance for each test."""
     config = DEFAULT_CONFIG.copy()
-    env = HFTEnv(config)
+    env = TwoSidedMarketEnv(config)
     env.reset() # Initialize internal states
     # Set a default valid market state for convenience
     env.bids = np.array([[100.00, 5.0], [99.99, 10.0]], dtype=np.float32)

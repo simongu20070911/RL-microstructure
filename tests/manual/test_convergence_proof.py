@@ -3,10 +3,14 @@
 Statistical tests to prove if the agent is converging/improving.
 """
 
+from pathlib import Path
 import re
 import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+LOG_PATH = PROJECT_ROOT / "runs" / "logs" / "training_with_memory.log"
 
 def extract_episode_pnls_from_log():
     """Extract all episode PnLs from the training log."""
@@ -15,7 +19,11 @@ def extract_episode_pnls_from_log():
     print("=" * 60)
     
     # Read the training log
-    with open('training_with_memory.log', 'r') as f:
+    if not LOG_PATH.exists():
+        print(f"❌ Training log not found at {LOG_PATH}. Run training before executing this analysis.")
+        return []
+
+    with LOG_PATH.open('r') as f:
         log_content = f.read()
     
     # Extract all episode PnL entries

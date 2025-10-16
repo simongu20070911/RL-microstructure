@@ -28,20 +28,20 @@ def get_disk_usage():
         'percent': (usage.used / usage.total) * 100
     }
 
-def get_log_size(log_path):
+def get_log_size(log_path: Path):
     """Get log file size in MB"""
-    if os.path.exists(log_path):
-        return os.path.getsize(log_path) / (1024**2)
+    if log_path.exists():
+        return log_path.stat().st_size / (1024**2)
     return 0
 
 def get_latest_training_step(log_path):
     """Extract latest training step from log"""
-    if not os.path.exists(log_path):
+    if not log_path.exists():
         return None
-    
+
     try:
         # Get last few lines efficiently
-        result = subprocess.run(['tail', '-20', log_path], 
+        result = subprocess.run(['tail', '-20', str(log_path)], 
                               capture_output=True, text=True)
         lines = result.stdout.strip().split('\n')
         
@@ -72,14 +72,16 @@ def emergency_stop_training(pid, reason):
 
 def monitor_training():
     """Main monitoring loop"""
-    pid_file = '/home/gaen/Documents/RL/training.pid'
-    log_file = '/home/gaen/Documents/RL/extended_training.log'
-    
-    if not os.path.exists(pid_file):
+    project_root = Path(__file__).resolve().parents[2]
+    log_dir = project_root / 'runs' / 'logs'
+    pid_file = log_dir / 'training.pid'
+    log_file = log_dir / 'extended_training.log'
+
+    if not pid_file.exists():
         print("❌ No training PID file found")
         return
-        
-    with open(pid_file, 'r') as f:
+
+    with pid_file.open('r') as f:
         pid = int(f.read().strip())
     
     print(f"📊 Monitoring training process {pid}")

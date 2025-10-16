@@ -1,8 +1,8 @@
 """Agent interfaces exposed by the rltrader package.
 
-The core implementations live under :mod:`rltrader.legacy.agents`.  This
-module provides clean, well-named access points so new code never needs to
-touch the legacy tree directly.
+The core implementations live under :mod:`rltrader.lib.agents`. This module
+provides clean, well-named access points so new code never needs to touch the
+archival tree directly.
 """
 
 from .base import CachedStates, ValidationStates
@@ -22,4 +22,3 @@ __all__ = [
     "create_sac_agent",
     "create_test_env",
 ]
-

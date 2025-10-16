@@ -1,139 +1,133 @@
 # High-Frequency Trading Reinforcement Learning Framework
 
-A comprehensive framework for training and evaluating reinforcement learning agents in high-frequency trading environments.
+A modular research codebase for building and evaluating reinforcement learning agents in high-frequency trading environments. The repository now separates core package code, scripts, data artefacts, documentation, and archived experiments so that day-to-day development stays organised.
 
-## Project Structure
+## Repository Layout
 
 ```
 .
-├── src/                    # Source code
-│   ├── environments/       # Trading environments
-│   │   └── hft_env.py     # HFT environment implementation
-│   ├── agents/            # RL agents
-│   │   └── sac_agent.py   # SAC agent implementation
-│   ├── models/            # Model architectures
-│   ├── utils/             # Utility functions
-│   │   ├── replay_buffer.py
-│   │   └── logger.py
-│   ├── configs/           # Configuration files
-│   │   └── default_config.py
-│   └── train.py           # Training script
-├── tests/                 # Test files
-├── data/                  # Data directory
-│   ├── raw/              # Raw data files
-│   └── processed/        # Processed data files
-├── logs/                  # Training logs
-├── models/                # Saved models
-├── notebooks/             # Jupyter notebooks
-├── Dockerfile            # Container configuration
-├── docker-compose.yml    # Service orchestration
-└── requirements.txt      # Python dependencies
+├── rltrader/                 # Core Python package
+│   ├── agents/               # Public agent APIs backed by maintained implementations
+│   ├── envs/                 # Stable environment interfaces
+│   ├── configs/              # Published configuration presets
+│   ├── utils/                # Shared utilities
+│   └── lib/                  # Original source tree preserved for reference
+├── scripts/
+│   ├── analysis/             # Offline analytics and reporting helpers
+│   ├── applications/         # Flask/Streamlit dashboards
+│   ├── monitoring/           # Operational monitoring utilities
+│   ├── training/             # Entry points for training workflows
+│   ├── utilities/            # Data and infrastructure helpers
+│   └── lib/                  # Archived exploratory scripts
+├── data/
+│   └── raw/                  # Order book datasets (git-ignored; add via Git LFS if needed)
+├── runs/
+│   ├── logs/                 # Training logs, PID files, TensorBoard runs
+│   └── results/              # Aggregated CSV/PNG outputs
+├── tests/
+│   ├── manual/               # Interactive validation suites
+│   └── test_execution.py     # Pytest-based smoke coverage
+├── docs/
+│   ├── guides/               # Operational documentation
+│   ├── reports/              # Result summaries
+│   └── research/             # Academic paper artefacts
+├── tools/                    # Order book data preparation utilities
+├── research/experiments/     # Archived experimental notebooks and configs
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
 ```
 
-## Features
+## Quick Start
 
-- High-Frequency Trading environment with realistic order book simulation
-- Soft Actor-Critic (SAC) agent implementation
-- Experience replay buffer for stable training
-- Comprehensive logging and monitoring
-- Docker support for reproducible environments
-- Weights & Biases integration for experiment tracking
-- TensorBoard support for visualization
+### 1. Install dependencies
 
-## Prerequisites
-
-- Python 3.10+
-- CUDA 12.4+ (for GPU support)
-- Docker and Docker Compose
-- NVIDIA Container Toolkit
-
-## Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/hft-rl.git
-cd hft-rl
-```
-
-2. Create and activate a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-4. Set up Docker (if using containerized environment):
+### 2. Prepare data (optional)
+
+Place raw order book CSV files under `data/raw/`. The training scripts default to `data/raw/orderbook_trimmed_small.csv`; adjust as required.
+
+### 3. Run a baseline training session
+
 ```bash
-./scripts/setup.sh
+python scripts/training/run_two_sided_training.py
 ```
 
-## Usage
+Configuration parameters can be edited inline (see the `config` dictionary near the top of the script) or by loading JSON from the run directory.
 
-### Training
+For rebated market experiments:
 
-1. Configure your environment in `src/configs/default_config.py`
-
-2. Run training:
 ```bash
-# Using local environment
-python src/train.py
-
-# Using Docker
-docker-compose run --rm training
+python scripts/training/run_rebated_training.py
 ```
 
-### Monitoring
+### 4. Monitor long-running jobs
 
-1. View training progress with TensorBoard:
 ```bash
-docker-compose up tensorboard
+# Start an extended experiment with nohup and background logging
+bash scripts/training/run_extended_experiment.sh
+
+# Tail operational status
+python scripts/monitoring/monitor_training.py
+python scripts/monitoring/monitor_extended_training.py
 ```
 
-2. View experiment tracking with Weights & Biases:
+TensorBoard logs are emitted to `runs/logs/<run>/tensorboard`. Launch TensorBoard locally with:
+
 ```bash
-docker-compose up wandb
+tensorboard --logdir runs/logs
 ```
 
-### Development
+### 5. Analyse results
 
-1. Run tests:
+Utility scripts under `scripts/analysis/` provide quick summaries, e.g.:
+
+- `python scripts/analysis/training_progress_report.py`
+- `python scripts/analysis/extract_tensorboard_scalars.py`
+- `python scripts/analysis/benchmark_inference_speed.py`
+
+Outputs are written to `runs/results/` by default.
+
+## Testing
+
+- Automated smoke coverage (pytest):
+
 ```bash
-pytest tests/
+pytest tests/test_execution.py
 ```
 
-2. Format code:
+- Manual evaluation suites (interactive, verbose logging):
+
 ```bash
-black src/ tests/
-isort src/ tests/
+python tests/manual/test_memory_preservation.py
+python tests/manual/test_recent_profitability.py
 ```
 
-## Configuration
+## Key Modules
 
-The framework is highly configurable through the following configuration files:
+- `rltrader.agents` exposes modernised imports (`CachedLSTMAttention`, `create_sac_agent`, etc.) that proxy to the preserved library implementations.
+- `rltrader.envs` provides aliases such as `RebatedMarketEnv` and `TwoSidedMarketEnv`, keeping the original environment code under `rltrader.lib`.
+- `scripts/training` contains battle-tested entry points for standard and extended training procedures.
+- `runs/` centralises all run-time artefacts (logs, results, tensorboard data, PID files) to keep the repository root clean.
 
-- `src/configs/default_config.py`: Default configuration parameters
-- `docker-compose.yml`: Docker service configuration
-- `.env`: Environment variables
+## Notes on Legacy Code
 
-## Contributing
+Historical experiments, exploratory notebooks and earlier environment variants are retained under `rltrader/lib/`, `scripts/lib/`, and `research/experiments/`. These files are intentionally untouched apart from path normalisation so that previous debug context remains accessible. New development should rely on the stable interfaces exposed through the `rltrader` package and the reorganised script suites.
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+## Contribution Workflow
+
+1. Fork and clone the repository.
+2. Create a feature branch: `git checkout -b feat/descriptive-name`.
+3. Run formatting and tests locally before committing.
+4. Submit a pull request describing the motivation and testing performed.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- PyTorch team for the excellent deep learning framework
-- OpenAI Gymnasium for the RL environment interface
-- Weights & Biases for experiment tracking
-- NVIDIA for CUDA support 
+This project is distributed under the MIT License. See `LICENSE` (if provided) for full details.

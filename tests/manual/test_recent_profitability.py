@@ -3,9 +3,13 @@
 T-test to prove if the last 20 episodes are significantly greater than zero.
 """
 
+from pathlib import Path
 import re
 import numpy as np
 from scipy import stats
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+LOG_PATH = PROJECT_ROOT / "runs" / "logs" / "training_with_memory.log"
 
 def test_recent_profitability():
     """Test if the most recent episodes are significantly profitable."""
@@ -13,8 +17,20 @@ def test_recent_profitability():
     print("🎯 TESTING RECENT PROFITABILITY (Last 20 Episodes)")
     print("=" * 60)
     
+    if not LOG_PATH.exists():
+        print(f"❌ Training log not found at {LOG_PATH}. Run a training session first.")
+        return {
+            'mean': None,
+            'std': None,
+            't_stat': None,
+            'p_value': None,
+            'significant': False,
+            'episodes': [],
+            'total_pnl': None,
+        }
+
     # Extract episode PnLs from training log
-    with open('training_with_memory.log', 'r') as f:
+    with LOG_PATH.open('r') as f:
         log_content = f.read()
     
     pnl_pattern = r'Final Episode PnL \(including liquidation\): \$(-?\d+\.?\d*)'

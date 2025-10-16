@@ -3,12 +3,15 @@
 Comprehensive statistical analysis of training progress.
 """
 
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
-import sys
-sys.path.append('/home/gaen/Documents/RL')
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+LOG_ROOT = PROJECT_ROOT / "runs" / "logs"
 
 def analyze_training_progress():
     """Analyze training progress with statistical tests."""
@@ -18,7 +21,15 @@ def analyze_training_progress():
     
     # Load training data
     try:
-        df = pd.read_csv('/home/gaen/Documents/RL/logs/extended_rebated_20250708-063017/tensorboard/progress.csv')
+        progress_files = sorted(
+            LOG_ROOT.glob("extended_rebated_*/tensorboard/progress.csv"),
+            reverse=True,
+        )
+        if not progress_files:
+            raise FileNotFoundError("No progress.csv files found under runs/logs/extended_rebated_*")
+        progress_path = progress_files[0]
+        print(f"Loading progress data from: {progress_path}")
+        df = pd.read_csv(progress_path)
         print(f"✓ Loaded {len(df)} validation checkpoints")
     except Exception as e:
         print(f"❌ Error loading data: {e}")

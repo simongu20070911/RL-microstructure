@@ -5,7 +5,7 @@ Test script to verify liquidation cost fixes and risk-based liquidation behavior
 
 import numpy as np
 import logging
-from rltrader.envs import RebatedHFTEnv
+from rltrader.envs import RebatedMarketEnv
 from rltrader.configs import FINAL_OPTIMIZED_CONFIG
 
 # Configure logging
@@ -25,7 +25,7 @@ def test_liquidation_fixes():
     config['episode_length'] = 50  # Short episode
     config['liquidation_mode'] = 'always'  # Force liquidation to test costs
     
-    env = RebatedHFTEnv(config)
+    env = RebatedMarketEnv(config)
     obs, info = env.reset()
     
     # Take some actions to build positions
@@ -74,7 +74,7 @@ def test_liquidation_fixes():
     config_risk['episode_length'] = 30  # Short episode
     config_risk['liquidation_mode'] = 'risk_based'  # Only liquidate for risk
     
-    env_risk = RebatedHFTEnv(config_risk)
+    env_risk = RebatedMarketEnv(config_risk)
     obs, info = env_risk.reset()
     
     # Build a small position
@@ -119,7 +119,7 @@ def test_liquidation_fixes():
     config_risk2['liquidation_mode'] = 'risk_based'
     config_risk2['max_inventory'] = 10.0  # Low inventory limit to trigger risk
     
-    env_risk2 = RebatedHFTEnv(config_risk2)
+    env_risk2 = RebatedMarketEnv(config_risk2)
     obs, info = env_risk2.reset()
     
     print(f"Max inventory limit: {config_risk2['max_inventory']}")

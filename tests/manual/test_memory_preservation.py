@@ -8,7 +8,7 @@ import numpy as np
 import torch
 import logging
 from rltrader.agents import CachedLSTMAttention, TimeSeriesEnvWrapper
-from rltrader.envs import RebatedHFTEnv
+from rltrader.envs import RebatedMarketEnv
 from rltrader.configs import FINAL_OPTIMIZED_CONFIG
 
 # Configure logging
@@ -24,7 +24,7 @@ def test_memory_preservation():
     config = FINAL_OPTIMIZED_CONFIG.copy()
     config['episode_length'] = 50  # Short episodes for testing
     
-    env = RebatedHFTEnv(config)
+    env = RebatedMarketEnv(config)
     
     # Create feature extractor
     feature_extractor = CachedLSTMAttention(

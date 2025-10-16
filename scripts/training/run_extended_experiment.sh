@@ -10,7 +10,9 @@ echo "Process will run in background with nohup"
 echo "=========================================="
 
 # Set up environment
-cd /home/gaen/Documents/RL
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+cd "${REPO_ROOT}"
 
 # Check GPU availability
 echo "🔍 GPU Status:"
@@ -26,17 +28,20 @@ free -h
 
 echo ""
 echo "🚀 Starting extended training..."
-echo "Logs will be written to: extended_training.log"
-echo "Process ID will be saved to: training.pid"
+LOG_DIR="${REPO_ROOT}/runs/logs"
+mkdir -p "$LOG_DIR"
+echo "Logs will be written to: ${LOG_DIR}/extended_training.log"
+echo "Process ID will be saved to: ${LOG_DIR}/training.pid"
 
 # Kill any existing training processes
-pkill -f "train_rebated_extended.py" 2>/dev/null || true
+pkill -f "scripts/training/run_rebated_training.py" 2>/dev/null || true
 
 # Start training with nohup
-nohup python train_rebated_extended.py > extended_training.log 2>&1 &
+nohup python scripts/training/run_rebated_training.py \
+  > "${LOG_DIR}/extended_training.log" 2>&1 &
 
 # Save process ID
-echo $! > training.pid
+echo $! > "${LOG_DIR}/training.pid"
 
 echo "✅ Extended training started successfully!"
 echo "Process ID: $(cat training.pid)"

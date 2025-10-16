@@ -91,24 +91,26 @@ def get_optimal_batch_size(memory_per_sample_gb=0.002, max_default_bs=1024, rese
         logging.warning(f"GPU info unavailable, using default batch size. Error: {e}")
         return 512
 
-def setup_extended_training_dir(base_log_dir="logs", config_to_save=None):
+def setup_extended_training_dir(base_log_dir: Path | None = None, config_to_save=None):
     """Create extended training directory with comprehensive logging."""
+    base_dir = base_log_dir if base_log_dir is not None else LOG_DIR
+    base_dir.mkdir(parents=True, exist_ok=True)
     run_name = f"extended_rebated_{datetime.now().strftime('%Y%m%d-%H%M%S')}"
-    log_dir = os.path.join(base_log_dir, run_name)
-    os.makedirs(log_dir, exist_ok=True)
+    log_dir = (base_dir / run_name).resolve()
+    log_dir.mkdir(parents=True, exist_ok=True)
     logging.info(f"Extended training log directory: {log_dir}")
 
     if config_to_save:
-        config_path = os.path.join(log_dir, "extended_config.json")
+        config_path = log_dir / "extended_config.json"
         try:
             config_copy = deepcopy(config_to_save)
-            with open(config_path, 'w') as f:
+            with config_path.open('w') as f:
                 json.dump(config_copy, f, indent=4)
             logging.info(f"Extended configuration saved to {config_path}")
         except Exception as e:
             logging.error(f"Failed to save extended configuration: {e}")
 
-    return log_dir
+    return str(log_dir)
 
 class ExtendedValidationCallback(BaseCallback):
     """Extended validation callback for long-term training monitoring."""
@@ -329,12 +331,12 @@ def run_extended_training():
         env.close()
         eval_env.close()
 
-if __name__ == "__main__":
+def main():
     print("🏛️ EXTENDED REBATED HFT TRAINING")
     print("Institutional-grade RL training with 50M timesteps")
     print("All critical fixes applied and validated")
     print()
-    
+
     # Display configuration summary
     print("📋 TRAINING CONFIGURATION:")
     print(f"  Timesteps: {extended_config['total_timesteps']:,}")
@@ -344,6 +346,10 @@ if __name__ == "__main__":
     print(f"  Architecture: LSTM + {extended_config['num_heads']}-head Attention")
     print(f"  Network Depth: {len(extended_config['net_arch_pi'])} layers")
     print()
-    
+
     # Start extended training
     run_extended_training()
+
+
+if __name__ == "__main__":
+    main()

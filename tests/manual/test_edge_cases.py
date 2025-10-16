@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import logging
 from rltrader.agents import CachedLSTMAttention, TimeSeriesEnvWrapper
-from rltrader.envs import RebatedHFTEnv
+from rltrader.envs import RebatedMarketEnv
 from rltrader.configs import FINAL_OPTIMIZED_CONFIG
 
 # Configure logging
@@ -28,7 +28,7 @@ def test_edge_cases():
     config = FINAL_OPTIMIZED_CONFIG.copy()
     config['episode_length'] = 10
     
-    env = RebatedHFTEnv(config)
+    env = RebatedMarketEnv(config)
     feature_extractor = CachedLSTMAttention(
         observation_space=env.observation_space,
         features_dim=128,
@@ -59,7 +59,7 @@ def test_edge_cases():
     print("🧪 Test 2: Memory Leak Detection")
     print("-" * 40)
     
-    env = RebatedHFTEnv(config)
+    env = RebatedMarketEnv(config)
     feature_extractor = CachedLSTMAttention(
         observation_space=env.observation_space,
         features_dim=128,
@@ -109,7 +109,7 @@ def test_edge_cases():
     print("🧪 Test 3: Training/Eval Mode Switching")
     print("-" * 40)
     
-    env = RebatedHFTEnv(config)
+    env = RebatedMarketEnv(config)
     feature_extractor = CachedLSTMAttention(
         observation_space=env.observation_space,
         features_dim=128,
@@ -158,8 +158,8 @@ def test_edge_cases():
     
     try:
         # Create multiple environments with shared feature extractor
-        env1 = RebatedHFTEnv(config)
-        env2 = RebatedHFTEnv(config)
+        env1 = RebatedMarketEnv(config)
+        env2 = RebatedMarketEnv(config)
         
         feature_extractor = CachedLSTMAttention(
             observation_space=env1.observation_space,
@@ -199,7 +199,7 @@ def test_edge_cases():
     print("🧪 Test 5: Invalid Options Handling")
     print("-" * 40)
     
-    env = RebatedHFTEnv(config)
+    env = RebatedMarketEnv(config)
     feature_extractor = CachedLSTMAttention(
         observation_space=env.observation_space,
         features_dim=128,
@@ -239,7 +239,7 @@ def test_edge_cases():
     print("🧪 Test 6: Device Consistency")
     print("-" * 40)
     
-    env = RebatedHFTEnv(config)
+    env = RebatedMarketEnv(config)
     feature_extractor = CachedLSTMAttention(
         observation_space=env.observation_space,
         features_dim=128,

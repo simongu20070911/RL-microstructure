@@ -3,16 +3,18 @@
 Debug script to test with actual trading actions instead of "do nothing"
 """
 
-import sys
-import os
-sys.path.append('/home/gaen/Documents/RL')
+from pathlib import Path
 
 import numpy as np
-from envs.env_2sided import HFTEnv
+
+from rltrader.envs import TwoSidedMarketEnv
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = PROJECT_ROOT / "data" / "raw"
 
 # Simple test configuration
 config = {
-    "csv_path": "/home/gaen/Documents/RL/orderbook_trimmed_large.csv",
+    "csv_path": str((DATA_DIR / "orderbook_trimmed_large.csv").resolve()),
     "initial_capital": 1000000.0,
     "order_book_levels": 5,
     "max_order_volume": 1.0,
@@ -49,7 +51,7 @@ def test_trading_actions():
     print("=== TESTING WITH TRADING ACTIONS ===")
     
     try:
-        env = HFTEnv(config)
+    env = TwoSidedMarketEnv(config)
         print(f"Environment created successfully")
         
         # Test multiple episodes with trading actions

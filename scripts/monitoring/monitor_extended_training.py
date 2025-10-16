@@ -10,13 +10,18 @@ import json
 import psutil
 import subprocess
 from datetime import datetime, timedelta
+from pathlib import Path
 import pandas as pd
 import numpy as np
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+LOG_DIR = PROJECT_ROOT / "runs" / "logs"
 
 def get_training_status():
     """Check if training process is running."""
     try:
-        with open('training.pid', 'r') as f:
+        pid_path = LOG_DIR / 'training.pid'
+        with pid_path.open('r') as f:
             pid = int(f.read().strip())
         
         if psutil.pid_exists(pid):
@@ -59,7 +64,8 @@ def get_gpu_status():
 def parse_training_progress():
     """Parse training progress from log file."""
     try:
-        if not os.path.exists('extended_training.log'):
+        log_path = LOG_DIR / 'extended_training.log'
+        if not log_path.exists():
             return {'found': False, 'reason': 'Log file not found'}
         
         progress_info = {
@@ -72,7 +78,7 @@ def parse_training_progress():
             'warnings': []
         }
         
-        with open('extended_training.log', 'r') as f:
+        with log_path.open('r') as f:
             lines = f.readlines()
         
         # Parse recent lines for progress
@@ -120,7 +126,8 @@ def parse_training_progress():
 def get_tensorboard_status():
     """Check TensorBoard status."""
     try:
-        with open('tensorboard.pid', 'r') as f:
+        pid_path = LOG_DIR / 'tensorboard.pid'
+        with pid_path.open('r') as f:
             pid = int(f.read().strip())
         
         if psutil.pid_exists(pid):
