@@ -1,6 +1,7 @@
 # High-Frequency Trading Reinforcement Learning Framework
 
 A modular research codebase for building and evaluating reinforcement learning agents in high-frequency trading environments. The repository now separates core package code, scripts, data artefacts, documentation, and archived experiments so that day-to-day development stays organised.
+This repo is cleaned. 
 
 ## Repository Layout
 
@@ -69,16 +70,6 @@ For rebated market experiments:
 python scripts/training/run_rebated_training.py
 ```
 
-### 4. Monitor long-running jobs
-
-```bash
-# Start an extended experiment with nohup and background logging
-bash scripts/training/run_extended_experiment.sh
-
-# Tail operational status
-python scripts/monitoring/monitor_training.py
-python scripts/monitoring/monitor_extended_training.py
-```
 
 TensorBoard logs are emitted to `runs/logs/<run>/tensorboard`. Launch TensorBoard locally with:
 
@@ -96,43 +87,5 @@ Utility scripts under `scripts/analysis/` provide quick summaries, e.g.:
 
 Outputs are written to `runs/results/` by default.
 
-### Optional containerisation
-
-Container definitions are tucked under `infra/docker/`. They are not wired into the default workflow, but you can build or compose from that folder if you prefer running the stack inside containers.
-
-## Testing
-
-- Automated smoke coverage (pytest):
-
-```bash
-pytest tests/test_execution.py
-```
-
-- Manual evaluation suites (interactive, verbose logging):
-
-```bash
-python tests/manual/test_memory_preservation.py
-python tests/manual/test_recent_profitability.py
-```
-
-## Key Modules
-
-- `rltrader.agents` exposes modernised imports (`CachedLSTMAttention`, `create_sac_agent`, etc.) that proxy to the preserved library implementations.
-- `rltrader.envs` provides aliases such as `RebatedMarketEnv` and `TwoSidedMarketEnv`, keeping the original environment code under `rltrader.lib`.
-- `scripts/training` contains battle-tested entry points for standard and extended training procedures.
-- `runs/` centralises all run-time artefacts (logs, results, tensorboard data, PID files) to keep the repository root clean.
-
-## Notes on Legacy Code
-
-Historical experiments, exploratory notebooks and earlier environment variants are retained under `rltrader/lib/`, `scripts/lib/`, and `research/experiments/`. These files are intentionally untouched apart from path normalisation so that previous debug context remains accessible. New development should rely on the stable interfaces exposed through the `rltrader` package and the reorganised script suites.
-
-## Contribution Workflow
-
-1. Fork and clone the repository.
-2. Create a feature branch: `git checkout -b feat/descriptive-name`.
-3. Run formatting and tests locally before committing.
-4. Submit a pull request describing the motivation and testing performed.
-
-## License
 
 This project is distributed under the MIT License. See `LICENSE` (if provided) for full details.
