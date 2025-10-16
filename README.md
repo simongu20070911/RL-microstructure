@@ -24,6 +24,9 @@ A modular research codebase for building and evaluating reinforcement learning a
 ├── runs/
 │   ├── logs/                 # Training logs, PID files, TensorBoard runs
 │   └── results/              # Aggregated CSV/PNG outputs
+├── lib/                      # Archived datasets and miscellaneous resources
+├── infra/
+│   └── docker/               # Optional container definitions (Dockerfile, compose)
 ├── tests/
 │   ├── manual/               # Interactive validation suites
 │   └── test_execution.py     # Pytest-based smoke coverage
@@ -33,8 +36,6 @@ A modular research codebase for building and evaluating reinforcement learning a
 │   └── research/             # Academic paper artefacts
 ├── tools/                    # Order book data preparation utilities
 ├── research/experiments/     # Archived experimental notebooks and configs
-├── Dockerfile
-├── docker-compose.yml
 ├── requirements.txt
 └── README.md
 ```
@@ -94,6 +95,10 @@ Utility scripts under `scripts/analysis/` provide quick summaries, e.g.:
 - `python scripts/analysis/benchmark_inference_speed.py`
 
 Outputs are written to `runs/results/` by default.
+
+### Optional containerisation
+
+Container definitions are tucked under `infra/docker/`. They are not wired into the default workflow, but you can build or compose from that folder if you prefer running the stack inside containers.
 
 ## Testing
 

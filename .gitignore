@@ -14,7 +14,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -80,3 +79,22 @@ orderbook*
 
 # Data collection dumps
 paper_analysis/doge_analysis/data_collection/
+docs/research/doge_analysis/data_collection/
+
+# Project outputs and archival artefacts
+data/raw/*
+runs/logs/*
+runs/results/*
+rltrader/lib/envs/previous_ver/
+rltrader/lib/envs/env_rebated/rebate_analysis_results/
+lib/datasets/
+
+!data/raw/.gitkeep
+!runs/.gitkeep
+!runs/logs/.gitkeep
+!runs/results/.gitkeep
+
+# Large binary artefacts
+*.zip
+*.tfevents.*
+runs/results/*.png
