@@ -8,9 +8,19 @@ from datetime import datetime
 from pathlib import Path
 import torch
 import numpy as np
+import pandas as pd
 import psutil
-import GPUtil
-import gymnasium as gym
+try:
+    import GPUtil  # type: ignore
+except ImportError:  # pragma: no cover - optional dependency
+    GPUtil = None  # Fallback handled in get_optimal_batch_size
+
+try:
+    import gymnasium as gym
+except ImportError as exc:  # pragma: no cover - surface a clear error
+    raise ImportError(
+        "gymnasium is required to run training scripts. Install it with `pip install gymnasium`."
+    ) from exc
 import importlib
 from stable_baselines3 import SAC
 from stable_baselines3.common.logger import configure as configure_logger # For resuming logging
@@ -20,6 +30,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = PROJECT_ROOT / "data" / "raw"
 RUNS_DIR = PROJECT_ROOT / "runs"
 LOG_DIR = RUNS_DIR / "logs"
+
 
 # --- Default Configuration (will be overridden if resuming, except total_timesteps) ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -93,6 +104,12 @@ config = {
     # "details": {"reward_type": "mtm if "},
 }
 
+csv_path = Path(config["csv_path"]).resolve()
+if not csv_path.exists():
+    raise FileNotFoundError(
+        f"Dataset not found at {csv_path}. Please place a limit order book CSV there before running training."
+    )
+
 # --- Helper Functions ---
 
 def get_env_class(module_path, class_name):
@@ -109,7 +126,7 @@ def get_env_class(module_path, class_name):
 
 def get_optimal_batch_size(memory_per_sample_gb=0.001, max_default_bs=512, reserve_factor=0.8):
     """Calculate optimal batch size based on available GPU VRAM."""
-    if not torch.cuda.is_available():
+    if not torch.cuda.is_available() or GPUtil is None:
         logging.warning("GPU not available, using default batch size.")
         return max_default_bs // 2 # Smaller default for CPU
     try:
@@ -544,7 +561,7 @@ def main():
     base_log_dir.mkdir(parents=True, exist_ok=True)  # Ensure base log dir exists
 
     # --- Check for existing runs and ask user ---
-        existing_runs = find_existing_runs(base_log_dir)
+    existing_runs = find_existing_runs(base_log_dir)
     selected_run_dir = None
     resume_model_path = None
     # Make a deep copy of the default config to avoid modifying it globally initially

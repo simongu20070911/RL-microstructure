@@ -13,9 +13,19 @@ from datetime import datetime
 from pathlib import Path
 import torch
 import numpy as np
+import pandas as pd
 import psutil
-import GPUtil
-import gymnasium as gym
+try:
+    import GPUtil  # type: ignore
+except ImportError:  # pragma: no cover - optional dependency
+    GPUtil = None
+
+try:
+    import gymnasium as gym
+except ImportError as exc:  # pragma: no cover - give actionable error message
+    raise ImportError(
+        "gymnasium is required to run training scripts. Install it with `pip install gymnasium`."
+    ) from exc
 import importlib
 from stable_baselines3 import SAC
 from stable_baselines3.common.logger import configure as configure_logger
@@ -28,6 +38,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = PROJECT_ROOT / "data" / "raw"
 RUNS_DIR = PROJECT_ROOT / "runs"
 LOG_DIR = RUNS_DIR / "logs"
+
 
 # Set up extended logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -63,6 +74,12 @@ extended_config.update({
     'env_class': 'RebatedMarketEnv',
 })
 
+csv_path = Path(extended_config["csv_path"]).resolve()
+if not csv_path.exists():
+    raise FileNotFoundError(
+        f"Dataset not found at {csv_path}. Provide a real LOB CSV before running the extended rebated training."
+    )
+
 def get_env_class(module_path, class_name):
     """Dynamically import the environment class."""
     try:
@@ -77,7 +94,7 @@ def get_env_class(module_path, class_name):
 
 def get_optimal_batch_size(memory_per_sample_gb=0.002, max_default_bs=1024, reserve_factor=0.7):
     """Calculate optimal batch size for extended training."""
-    if not torch.cuda.is_available():
+    if not torch.cuda.is_available() or GPUtil is None:
         logging.warning("GPU not available, using CPU with smaller batch size.")
         return 256
     try:
